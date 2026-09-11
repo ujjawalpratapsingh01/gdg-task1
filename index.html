@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finora — Personal Finance Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">₹</div>
+        <div>
+          <h1>Finora</h1>
+          <span>Personal Finance Tracker</span>
+        </div>
+      </div>
+      <button id="themeToggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">☾</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">FINANCIAL OVERVIEW</p>
+          <h2>Your money, clearly organized.</h2>
+          <p class="hero-copy">Track income and expenses, understand your spending, and stay in control.</p>
+        </div>
+        <button class="primary-btn" id="addTopBtn">＋ Add transaction</button>
+      </section>
+
+      <section class="summary-grid" aria-label="Financial summary">
+        <article class="summary-card balance-card">
+          <div class="card-icon">₹</div>
+          <div>
+            <p>Total Balance</p>
+            <h3 id="balance">₹0.00</h3>
+            <span id="balanceHint">Your current net balance</span>
+          </div>
+        </article>
+        <article class="summary-card">
+          <div class="card-icon income-icon">↗</div>
+          <div>
+            <p>Total Income</p>
+            <h3 id="income">₹0.00</h3>
+            <span>Money received</span>
+          </div>
+        </article>
+        <article class="summary-card">
+          <div class="card-icon expense-icon">↘</div>
+          <div>
+            <p>Total Expenses</p>
+            <h3 id="expenses">₹0.00</h3>
+            <span>Money spent</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <aside class="panel form-panel" id="formPanel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">MANAGE MONEY</p>
+              <h2 id="formTitle">Add transaction</h2>
+            </div>
+            <button id="cancelEdit" class="text-btn hidden">Cancel</button>
+          </div>
+
+          <form id="transactionForm" novalidate>
+            <input type="hidden" id="editId">
+
+            <label>
+              Title / Description
+              <input id="title" type="text" placeholder="e.g. Monthly salary" maxlength="60" required>
+              <small class="error" id="titleError"></small>
+            </label>
+
+            <label>
+              Amount
+              <div class="amount-input">
+                <span>₹</span>
+                <input id="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+              </div>
+              <small class="error" id="amountError"></small>
+            </label>
+
+            <fieldset>
+              <legend>Transaction type</legend>
+              <div class="type-toggle">
+                <label class="type-option income-option">
+                  <input type="radio" name="type" value="income" checked>
+                  <span>↗ Income</span>
+                </label>
+                <label class="type-option expense-option">
+                  <input type="radio" name="type" value="expense">
+                  <span>↘ Expense</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label>
+              Category
+              <select id="category" required>
+                <option value="">Select category</option>
+                <option>Salary</option>
+                <option>Freelance</option>
+                <option>Food</option>
+                <option>Travel</option>
+                <option>Shopping</option>
+                <option>Bills</option>
+                <option>Entertainment</option>
+                <option>Education</option>
+                <option>Health</option>
+                <option>Other</option>
+              </select>
+              <small class="error" id="categoryError"></small>
+            </label>
+
+            <label>
+              Date
+              <input id="date" type="date" required>
+              <small class="error" id="dateError"></small>
+            </label>
+
+            <button class="primary-btn full" type="submit" id="submitBtn">Add transaction</button>
+          </form>
+        </aside>
+
+        <section class="panel history-panel">
+          <div class="panel-heading history-heading">
+            <div>
+              <p class="eyebrow">ACTIVITY</p>
+              <h2>Transaction history</h2>
+            </div>
+            <span class="count-badge" id="transactionCount">0 transactions</span>
+          </div>
+
+          <div class="filters">
+            <div class="search-box">
+              <span>⌕</span>
+              <input id="search" type="search" placeholder="Search transactions...">
+            </div>
+            <select id="typeFilter" aria-label="Filter by type">
+              <option value="all">All types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+            <select id="categoryFilter" aria-label="Filter by category">
+              <option value="all">All categories</option>
+            </select>
+            <select id="sortFilter" aria-label="Sort transactions">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="amount-desc">Highest amount</option>
+              <option value="amount-asc">Lowest amount</option>
+            </select>
+          </div>
+
+          <div id="transactionList" class="transaction-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer>Finora • Data is stored locally in your browser.</footer>
+  </div>
+
+  <div class="modal hidden" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+    <div class="modal-card">
+      <div class="modal-icon">!</div>
+      <h2 id="deleteTitle">Delete transaction?</h2>
+      <p>This action cannot be undone. The transaction will be removed from your local records.</p>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="keepBtn">Keep it</button>
+        <button class="danger-btn" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
